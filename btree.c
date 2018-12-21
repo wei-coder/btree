@@ -143,7 +143,13 @@ btnode_t * bt_search(btnode_t * root, unsigned int key)
 
 void bt_delete(btnode_t * root, unsigned int key)
 {
-
+	btnode_t * sub = bt_search(root,key);
+	if(NULL == sub)
+	{
+		return;
+	}
+	
+	free(sub);
 }
 
 void bt_init()
