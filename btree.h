@@ -1,4 +1,4 @@
-//B+æ ‘çš„æ•°æ®ç»“æ„å®šä¹‰
+//B+Ê÷µÄÊı¾İ½á¹¹¶¨Òå
 
 #define BTREE_KEY_NUM	10
 
@@ -71,7 +71,6 @@ static inline int list_empty(const struct list_head *head)
 }
 
 
-#define BT_PTR struct btree_node_s *
 #define BT_KEY unsigned long
 
 typedef enum
@@ -84,31 +83,81 @@ typedef enum
 
 typedef struct btree_sblock_s
 {
-	btlvl_t bts_level;		//å±‚çº§
-	int 	bts_num;		//keyæ•°é‡,æ­¤å¤„è¡¨ç¤ºæœ¬èŠ‚ç‚¹å·²ç»å­˜å‚¨çš„keyæ•°é‡
-	BT_PTR 	bts_left;		//å³å­æ ‘
-	BT_PTR 	bts_right;		//å·¦å­æ ‘
+	btlvl_t bts_level;		//±¾½ÚµãµÄlevel
+	int 	bts_num;		//±¾½ÚµãµÄÓĞĞ§keyÊıÁ¿
 }bts_t;
 
 typedef struct btree_key_s
 {
-	BT_KEY bn_key;	//key
+	BT_KEY bn_key;	//¹Ø¼ü×Ö
 }btk_t;
 
 typedef struct btree_pointer_s
 {
-	BT_PTR bn_ptr;	//æŒ‡é’ˆ
+	void * bn_ptr;	//×ÓÊ÷Ö¸Õë
 }btp_t;
 
-typedef struct btree_node_s
+typedef struct btree_leaf_s
 {
-	bts_t 	bn_sblock;			//èŠ‚ç‚¹å…ƒä¿¡æ¯
-	void *	bn_entry;			//èŠ‚ç‚¹æ•°æ®è¡¨é¡¹
+	struct list_head lnode;		//ÓÃÓÚÁ¬½ÓÒ¶×Ó½ÚµãµÄÁ´±í
+	bts_t 	bn_sblock;			//±¾½ÚµãµÄÔªĞÅÏ¢
+	btk_t	bn_data[];			//Ò¶×Ó½ÚµãµÄÊı¾İÄÚÈİ
+}btleaf_t;
+
+typedef struct btree_index_s
+{
+	btk_t	bn_key;
+	btp_t	bn_ptr;
+}bti_t;
+
+typedef struct btree_inter_s
+{
+	bts_t	bn_sblock;			//±¾½ÚµãµÄÔªĞÅÏ¢
+	bti_t	bn_entry[];			//ÖĞ¼ä½ÚµãµÄÒ¶×ÓĞÅÏ¢
+}btinter_t;
+
+typedef union
+{
+	btleaf_t	bn_leaf;		//Ò¶×Ó½Úµã
+	btinter_t	bn_inter;		//ÖĞ¼ä½Úµã
 }btnode_t;
+
+#define BT_PTR (btnode_t *)
 
 typedef struct bplus_tree_s
 {
-	btnode_t *	bpt_root;		//æ ¹èŠ‚ç‚¹
-	btlvl_t		bpt_level;		//å±‚çº§
-	int			bpt_keynums;	//å­˜å‚¨çš„keyçš„ä¸ªæ•°
-}bpt_t;
+	btnode_t *	bpt_root;		//Ê÷µÄ¸ù½ÚµãÖ¸Õë
+	btlvl_t		bpt_level;		//Ê÷µÄ×Ü²ã¼¶
+	int			bpt_keynums;	//Ê÷µÄ×Ü¹Ø¼ü×ÖÊ÷
+}bptree_t;
+
+#define NODE_SIZE	512
+#define INTER_KEY_NUM	((NODE_SIZE-sizeof(bts_t))/(sizeof(btk_t)+sizeof(btp_t)))
+#define LEAF_KEY_NUM	((NODE_SIZE-sizeof(bts_t)-sizeof(struct list_head))/(sizeof(btk_t)))
+
+typedef enum
+{
+	IST_OK = 0,
+	IST_SPLIT,
+	IST_ROTATE,
+	IST_FAIL
+}istv_t;		//insert return value
+
+typedef struct
+{
+	btk_t updkey;
+	btk_t rightkey;
+	btk_t leftkey;
+}rot_info_t;
+
+typedef struct
+{
+	btk_t updkey;		//Ô­½ÚµãµÄĞÂkey
+	bti_t newidx;		//ĞÂ½ÚµãµÄË÷ÒıĞÅÏ¢
+}spt_info_t;
+
+typedef struct
+{
+	btnode_t * pNode;
+	int idx;
+}btpath_t;
