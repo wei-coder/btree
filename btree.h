@@ -77,15 +77,14 @@ typedef enum
 {
 	BT_LVL_LEAF = 1,
 	BT_LVL_INT,
-	BT_LVL_ROOT,
-	BT_LVL_MAX
+	BT_LVL_ROOT
 }btlvl_t;
 
-typedef struct btree_sblock_s
+typedef enum
 {
-	btlvl_t bts_level;		//本节点的level
-	int 	bts_num;		//本节点的有效key数量
-}bts_t;
+	TYPE_LEAF = 1,
+	TYPE_INT
+}btype_t;
 
 typedef struct btree_key_s
 {
@@ -100,7 +99,7 @@ typedef struct btree_pointer_s
 typedef struct btree_leaf_s
 {
 	struct list_head lnode;		//用于连接叶子节点的链表
-	bts_t 	bn_sblock;			//本节点的元信息
+	int 	bn_num;				//本节点的有效key数量
 	btk_t	bn_data[];			//叶子节点的数据内容
 }btleaf_t;
 
@@ -112,14 +111,18 @@ typedef struct btree_index_s
 
 typedef struct btree_inter_s
 {
-	bts_t	bn_sblock;			//本节点的元信息
+	int 	bn_num;				//本节点的有效key数量
 	bti_t	bn_entry[];			//中间节点的叶子信息
 }btinter_t;
 
-typedef union
+typedef struct bptree_node_s
 {
-	btleaf_t	bn_leaf;		//叶子节点
-	btinter_t	bn_inter;		//中间节点
+	btlvl_t 		bn_level;		//本节点的level
+	btype_t			bn_type;		//本节点的类型
+	union{
+		btleaf_t	bn_leaf;		//叶子节点
+		btinter_t	bn_inter;		//中间节点
+	};
 }btnode_t;
 
 #define BT_PTR (btnode_t *)
@@ -132,8 +135,8 @@ typedef struct bplus_tree_s
 }bptree_t;
 
 #define NODE_SIZE	512
-#define INTER_KEY_NUM	((NODE_SIZE-sizeof(bts_t))/(sizeof(btk_t)+sizeof(btp_t)))
-#define LEAF_KEY_NUM	((NODE_SIZE-sizeof(bts_t)-sizeof(struct list_head))/(sizeof(btk_t)))
+#define INTER_KEY_NUM	((NODE_SIZE-sizeof(btlvl_t)-sizeof(btype_t)-sizeof(int))/sizeof(bti_t))
+#define LEAF_KEY_NUM	((NODE_SIZE-sizeof(btlvl_t)-sizeof(btype_t)-sizeof(int)-sizeof(struct list_head))/sizeof(btk_t))
 
 typedef enum
 {
@@ -143,17 +146,45 @@ typedef enum
 	IST_FAIL
 }istv_t;		//insert return value
 
+typedef enum
+{
+	DEL_OK = 0,
+	DEL_ROTATE,
+	DEL_MERGE,
+	DEL_FAIL
+}delv_t;		//delete return value
+
+typedef enum
+{
+	ROT_DEL = 1,
+	ROT_ADD
+}rot_t;		//rotate mode
+
+typedef enum
+{
+	MID = 0,
+	LEFT,
+	RIGHT,
+	ORDNUM
+}ndflag_t;		//node flag for rotate/merge
+
 typedef struct
 {
 	btk_t updkey;
 	btk_t rightkey;
 	btk_t leftkey;
-}rot_info_t;
+}rotate_t;
 
 typedef struct
 {
-	btk_t updkey;		//原节点的新key
-	bti_t newidx;		//新节点的索引信息
+	btk_t updkey;		//the Node new key
+	ndflag_t node;		//node be merged
+}merge_t;
+
+typedef struct
+{
+	btk_t updkey;		//update key
+	bti_t newidx;		//split new entry
 }spt_info_t;
 
 typedef struct
