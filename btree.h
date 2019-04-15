@@ -1,5 +1,7 @@
 //B+树的数据结构定义
 
+#pragma pack()
+
 #define BTREE_KEY_NUM	10
 
 #define BTREE_KEY_FULL	2
@@ -129,12 +131,13 @@ typedef struct bptree_node_s
 
 typedef struct bplus_tree_s
 {
-	btnode_t *	bpt_root;		//树的根节点指针
-	btlvl_t		bpt_level;		//树的总层级
-	int			bpt_keynums;	//树的总关键字树
+	btnode_t *	bpt_root;			//树的根节点指针
+	int			bpt_level;			//树的总层级
+	int			bpt_branch_nums;	//树的最大叶子数
+	int			bpt_leaf_nums;		//叶子节点的最大表项数
 }bptree_t;
 
-#define NODE_SIZE	512
+#define NODE_SIZE	128
 #define INTER_KEY_NUM	((NODE_SIZE-sizeof(btlvl_t)-sizeof(btype_t)-sizeof(int))/sizeof(bti_t))
 #define LEAF_KEY_NUM	((NODE_SIZE-sizeof(btlvl_t)-sizeof(btype_t)-sizeof(int)-sizeof(struct list_head))/sizeof(btk_t))
 
@@ -143,6 +146,7 @@ typedef enum
 	IST_OK = 0,
 	IST_SPLIT,
 	IST_ROTATE,
+	IST_UPDATE,
 	IST_FAIL
 }istv_t;		//insert return value
 

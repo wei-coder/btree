@@ -4,6 +4,8 @@
 import pexpect
 import sys
 import random
+import time
+import os
 
 q_order = 'q'
 p_order = 'p'
@@ -16,7 +18,7 @@ remove = [".*delete:", pexpect.EOF, pexpect.TIMEOUT]
 
 prompt = [common,add, remove, pexpect.EOF, pexpect.TIMEOUT]
 
-def insert(value):
+def insert(child, value):
     index = child.expect(common)
     if(0 == index):
         child.sendline(i_order)
@@ -26,10 +28,10 @@ def insert(value):
         else:
             print("timeout!")
     else:
-        show()
+        show(child)
         print("can not insert node!")
 
-def delete(value):
+def delete(child, value):
     index = child.expect(common)
     if(0 == index):
         child.sendline(d_order)
@@ -41,39 +43,42 @@ def delete(value):
     else:
         print("can not delete node!")
 
-def show():
+def show(child):
     index = child.expect(common)
     if(0 == index):
         child.sendline(p_order)
     else:
         print("can not show!")
 
-def quit_proc():
-    index = child.expect(common)
-    if(0 == index):
-        child.sendline(q_order)
-    else:
-        print("can not quit!")
+def quit_proc(child):
+    child.interact()
 
 
 def start_proc(cmd):
     child = pexpect.spawn(cmd)
     return child
 
-def main():
-    show()
-    fout = open("log.txt", "+wb")
+def main_test(child,fout):
+    show(child)
     child.logfile = fout
-    for i in range(1, 100):
-        value = random.randint(3,1000)
-        insert(value)
-    show()
-    quit_proc()
+    for i in range(0, 84):
+#        value = random.randint(3,1000)
+        value = i
+        insert(child,value)
+        time.sleep(0.001)
+    show(child)
 
 
 
 if __name__=='__main__':
+    os.system('rm -rf core.*')
+    os.system('rm -rf log.txt')
+    os.system('./gcc.sh')
+    fout = open("log.txt", "+wb")
+    os.system("tailf log.txt &")
     cmd = './btree'
     child = start_proc(cmd)
-    main()
+    main_test(child,fout)
+    os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
+    quit_proc(child)
 

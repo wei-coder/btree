@@ -1,620 +1,521 @@
 p
 ***print tree list as follow*****
-Root───0
-       └──────5
-              └──────1
+Root
+There is no data, please insert!
 #input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:271
-271
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:0
+0
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:20
-20
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:1
+1
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:881
-881
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:550
-550
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:898
-898
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:572
-572
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:942
-942
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:817
-817
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:492
-492
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:540
-540
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:550
-550
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:171
-171
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:928
-928
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:210
-210
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:29
-29
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:48
-48
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:143
-143
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:722
-722
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:506
-506
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:460
-460
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:498
-498
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:117
-117
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:406
-406
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:982
-982
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:693
-693
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:630
-630
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:566
-566
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:491
-491
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:78
-78
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:822
-822
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:967
-967
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:120
-120
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:672
-672
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:701
-701
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:645
-645
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:803
-803
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:961
-961
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:361
-361
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:408
-408
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:211
-211
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:412
-412
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:466
-466
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:889
-889
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:22
-22
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:469
-469
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:20
-20
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:466
-466
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:989
-989
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:391
-391
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:200
-200
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:983
-983
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:764
-764
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:148
-148
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:121
-121
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:576
-576
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:975
-975
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:952
-952
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:496
-496
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:551
-551
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:675
-675
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:797
-797
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:165
-165
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:275
-275
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:598
-598
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:987
-987
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:499
-499
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:557
-557
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:274
-274
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:585
-585
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:902
-902
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:571
-571
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:518
-518
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:833
-833
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:833
-833
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:903
-903
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:680
-680
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:225
-225
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:215
-215
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:974
-974
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:415
-415
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:783
-783
-B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:714
-714
-Key:722 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:490
-490
-Key:722 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:596
-596
-Key:722 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:216
-216
-Key:722 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:836
-836
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:532
-532
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
-i
-
- please input node id which you want insert:709
-709
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:2
+2
+#input order[insert/del/print/?/quit]:i
 i
 
  please input node id which you want insert:3
 3
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:215
-215
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:4
+4
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:928
-928
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:5
+5
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:830
-830
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:6
+6
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:410
-410
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:7
+7
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:132
-132
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:8
+8
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:676
-676
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:9
+9
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:742
-742
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:10
+10
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:660
-660
-Key:928 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:11
+11
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:999
-999
-Key:999 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:i
+ please input node id which you want insert:12
+12
+#input order[insert/del/print/?/quit]:i
 i
 
- please input node id which you want insert:495
-495
-Key:999 is bigger than parent key:550B+ Tree is invalid!#input order[insert/del/print/?/quit]:p
+ please input node id which you want insert:13
+13
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:14
+14
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:15
+15
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:16
+16
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:17
+17
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:18
+18
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:19
+19
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:20
+20
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:21
+21
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:22
+22
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:23
+23
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:24
+24
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:25
+25
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:26
+26
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:27
+27
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:28
+28
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:29
+29
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:30
+30
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:31
+31
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:32
+32
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:33
+33
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:34
+34
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:35
+35
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:36
+36
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:37
+37
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:38
+38
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:39
+39
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:40
+40
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:41
+41
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:42
+42
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:43
+43
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:44
+44
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:45
+45
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:46
+46
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:47
+47
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:48
+48
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:49
+49
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:50
+50
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:51
+51
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:52
+52
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:53
+53
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:54
+54
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:55
+55
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:56
+56
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:57
+57
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:58
+58
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:59
+59
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:60
+60
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:61
+61
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:62
+62
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:63
+63
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:64
+64
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:65
+65
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:66
+66
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:67
+67
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:68
+68
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:69
+69
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:70
+70
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:71
+71
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:72
+72
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:73
+73
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:74
+74
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:75
+75
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:76
+76
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:77
+77
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:78
+78
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:79
+79
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:80
+80
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:81
+81
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:82
+82
+#input order[insert/del/print/?/quit]:i
+i
+
+ please input node id which you want insert:83
+83
+#input order[insert/del/print/?/quit]:p
 p
 ***print tree list as follow*****
-Root───0
-│      ├──────78
-│      │      ├──────1
-│      │      ├──────3
-│      │      ├──────20
-│      │      ├──────20
-│      │      ├──────22
-│      │      ├──────29
-│      │      ├──────48
-│      │      └──────78
-│      ├──────210
-│      │      ├──────117
-│      │      ├──────120
-│      │      ├──────121
-│      │      ├──────132
-│      │      ├──────143
-│      │      ├──────148
-│      │      ├──────165
-│      │      ├──────171
-│      │      ├──────200
-│      │      ├──────210
-│      ├──────274
-│      │      ├──────211
-│      │      ├──────215
-│      │      ├──────215
-│      │      ├──────216
-│      │      ├──────225
-│      │      ├──────271
-│      │      └──────274
-│      ├──────408
-│      │      ├──────275
-│      │      ├──────361
-│      │      ├──────391
-│      │      ├──────406
-│      │      └──────408
-│      ├──────881
-│      │      ├──────410
-│      │      ├──────412
-│      │      ├──────415
-│      │      ├──────460
-│      │      ├──────466
-│      │      ├──────466
-│      │      ├──────469
-│      │      ├──────490
-│      │      ├──────491
-│      │      ├──────492
-│      ├──────974
-│      │      ├──────889
-│      │      ├──────898
-│      │      ├──────902
-│      │      ├──────903
-│      │      ├──────928
-│      │      └──────928
-│      ├──────928
-│      │      ├──────496
-│      │      ├──────498
-│      │      ├──────499
-│      │      ├──────506
-│      │      ├──────518
-│      │      ├──────532
-│      │      ├──────540
-│      │      ├──────550
-│      │      └──────550
-│      └──────999
-│             ├──────495
-│             ├──────975
-│             ├──────982
-│             ├──────983
-│             ├──────987
-│             ├──────989
-│             └──────999
-└──────999
-       ├──────576
-       │      ├──────551
-       │      ├──────557
-       │      ├──────566
-       │      ├──────571
-       │      ├──────572
-       │      └──────576
-       ├──────672
-       │      ├──────585
-       │      ├──────596
-       │      ├──────598
-       │      ├──────630
-       │      ├──────645
-       │      ├──────660
-       │      └──────672
-       ├──────722
-       │      ├──────675
-       │      ├──────676
-       │      ├──────680
-       │      ├──────693
-       │      ├──────701
-       │      ├──────709
-       │      ├──────714
-       │      └──────722
-       ├──────817
-       │      ├──────742
-       │      ├──────764
-       │      ├──────783
-       │      ├──────797
-       │      ├──────803
-       │      └──────817
-       ├──────928
-       │      ├──────822
-       │      ├──────830
-       │      ├──────833
-       │      ├──────833
-       │      ├──────836
-       │      └──────881
-       └──────989
-              ├──────942
-              ├──────952
-              ├──────961
-              ├──────967
-              └──────974
-#input order[insert/del/print/?/quit]:q
+Root
+├────────11
+│	 ├──────0
+│	 ├──────1
+│	 ├──────2
+│	 ├──────3
+│	 ├──────4
+│	 ├──────5
+│	 ├──────6
+│	 ├──────7
+│	 ├──────8
+│	 ├──────9
+│	 ├──────10
+│	 └──────11
+├────────23
+│	 ├──────12
+│	 ├──────13
+│	 ├──────14
+│	 ├──────15
+│	 ├──────16
+│	 ├──────17
+│	 ├──────18
+│	 ├──────19
+│	 ├──────20
+│	 ├──────21
+│	 ├──────22
+│	 └──────23
+├────────35
+│	 ├──────24
+│	 ├──────25
+│	 ├──────26
+│	 ├──────27
+│	 ├──────28
+│	 ├──────29
+│	 ├──────30
+│	 ├──────31
+│	 ├──────32
+│	 ├──────33
+│	 ├──────34
+│	 └──────35
+├────────47
+│	 ├──────36
+│	 ├──────37
+│	 ├──────38
+│	 ├──────39
+│	 ├──────40
+│	 ├──────41
+│	 ├──────42
+│	 ├──────43
+│	 ├──────44
+│	 ├──────45
+│	 ├──────46
+│	 └──────47
+├────────59
+│	 ├──────48
+│	 ├──────49
+│	 ├──────50
+│	 ├──────51
+│	 ├──────52
+│	 ├──────53
+│	 ├──────54
+│	 ├──────55
+│	 ├──────56
+│	 ├──────57
+│	 ├──────58
+│	 └──────59
+├────────71
+│	 ├──────60
+│	 ├──────61
+│	 ├──────62
+│	 ├──────63
+│	 ├──────64
+│	 ├──────65
+│	 ├──────66
+│	 ├──────67
+│	 ├──────68
+│	 ├──────69
+│	 ├──────70
+│	 └──────71
+└────────83
+ 	   ├──────72
+ 	   ├──────73
+ 	   ├──────74
+ 	   ├──────75
+ 	   ├──────76
+ 	   ├──────77
+ 	   ├──────78
+ 	   ├──────79
+ 	   ├──────80
+ 	   ├──────81
+ 	   ├──────82
+ 	   └──────83
+#input order[insert/del/print/?/quit]:qq
+it's time to quit!
