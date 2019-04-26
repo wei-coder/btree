@@ -61,7 +61,7 @@ def start_proc(cmd):
 def main_test(child,fout):
     show(child)
     child.logfile = fout
-    for i in range(0, 84):
+    for i in range(0, 100):
 #        value = random.randint(3,1000)
         value = i
         insert(child,value)
@@ -72,7 +72,7 @@ def main_test(child,fout):
 
 if __name__=='__main__':
     os.system('rm -rf core.*')
-    os.system('rm -rf log.txt')
+    os.system('rm -rf *.txt')
     os.system('./gcc.sh')
     fout = open("log.txt", "+wb")
     os.system("tailf log.txt &")

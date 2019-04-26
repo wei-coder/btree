@@ -1,0 +1,108 @@
+#ifndef __VECTOR_H_
+#define __VECTOR_H_
+
+#define STK_QUE_LEN 150
+
+typedef struct arr_queue_s
+{
+    void * pque[STK_QUE_LEN];
+    int f;
+    int len;
+}aque_t;
+
+typedef struct arr_stack_s
+{
+    void * pstack[STK_QUE_LEN];
+    int top;
+    int button;
+}astk_t;
+
+struct list_head {
+        struct list_head *prev, *next;
+};
+
+typedef struct list_stack_s
+{
+	struct list_head * top;
+}lstack_t;
+
+typedef struct list_que_s
+{
+    struct list_head * head;
+}lque_t;
+
+#define list_entry(ptr, type, member) \
+        ((type *)((char *)(ptr) - (size_t)(&((type *)0)->member)))
+
+#define list_first_entry(ptr, type, member) \
+	list_entry((ptr)->next, type, member)
+
+#define list_last_entry(ptr, type, member) \
+	list_entry((ptr)->prev, type, member)
+
+#define list_for_each(pos, head) \
+        for (pos = (head)->next; pos != (head); pos = pos->next)
+
+#define list_for_each_safe(pos, n, head) \
+        for (pos = (head)->next, n = pos->next; pos != (head); \
+                pos = n, n = pos->next)
+
+static inline void list_init(struct list_head *link)
+{
+        link->prev = link;
+        link->next = link;
+}
+
+static inline void
+__list_add(struct list_head *link, struct list_head *prev, struct list_head *next)
+{
+        link->next = next;
+        link->prev = prev;
+        next->prev = link;
+        prev->next = link;
+}
+
+static inline void __list_del(struct list_head *prev, struct list_head *next)
+{
+        prev->next = next;
+        next->prev = prev;
+}
+
+static inline void list_add(struct list_head *link, struct list_head *prev)
+{
+        __list_add(link, prev, prev->next);
+}
+
+static inline void list_add_tail(struct list_head *link, struct list_head *head)
+{
+	__list_add(link, head->prev, head);
+}
+
+static inline void list_del(struct list_head *link)
+{
+        __list_del(link->prev, link->next);
+        list_init(link);
+}
+
+static inline int list_empty(const struct list_head *head)
+{
+	return head->next == head;
+}
+
+void aque_init(aque_t * queue);
+void * aq_pop(aque_t * queue);
+void aq_push(aque_t * queue, void * ptr);
+void lque_init(lque_t * queue);
+void * lq_pop(lque_t * queue);
+void lq_push(lque_t * queue, void * ptr);
+void astack_init(astk_t * stack);
+void * as_pop(astk_t * stack);
+void as_push(astk_t * stack, void * ptr);
+void * as_top(astk_t * stack);
+void lstack_init(lstack_t * stack);
+void * ls_pop(lstack_t * stack);
+void ls_push(lstack_t * stack, void * ptr);
+void * ls_top(lstack_t * stack);
+void * list_data(struct list_head * pNode);
+
+#endif
