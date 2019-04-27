@@ -61,7 +61,7 @@ def start_proc(cmd):
 def main_test(child,fout):
     show(child)
     child.logfile = fout
-    for i in range(0, 100):
+    for i in range(0, 120):
 #        value = random.randint(3,1000)
         value = i
         insert(child,value)
@@ -75,10 +75,10 @@ if __name__=='__main__':
     os.system('rm -rf *.txt')
     os.system('./gcc.sh')
     fout = open("log.txt", "+wb")
-    os.system("tailf log.txt &")
+    os.system("tail -f log.txt &")
     cmd = './btree'
     child = start_proc(cmd)
     main_test(child,fout)
-    os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
+    os.system("ps -ef | grep tail | grep -v grep | cut -c 9-15 | xargs kill -9")
     quit_proc(child)
 
