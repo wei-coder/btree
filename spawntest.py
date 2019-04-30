@@ -58,27 +58,67 @@ def start_proc(cmd):
     child = pexpect.spawn(cmd)
     return child
 
-def main_test(child,fout):
-    show(child)
-    child.logfile = fout
-    for i in range(0, 120):
-#        value = random.randint(3,1000)
-        value = i
+def batch_insert(child,num):
+    for i in range(0, num):
+        value = random.randint(3,1000)
+#        value = i
         insert(child,value)
         time.sleep(0.001)
-    show(child)
+
+def batch_delete(child,num):
+    for i in range(0, num):
+        value = random.randint(3,1000)
+#        value = i
+        delete(child,value)
+        time.sleep(0.001)
 
 
+def print_prompt():
+    print("Insert node please press 'i'!")
+    print("Delete node please press 'd'!")
+    print("Get prompt info please press '?'!")
+    print("Print tree info please press 'p'!")
+    print("quit this program please pree 'q'!")
+
+def print_eof():
+    print("#input order [insert/del/?/quit]:")
 
 if __name__=='__main__':
     os.system('rm -rf core.*')
     os.system('rm -rf *.txt')
     os.system('./gcc.sh')
     fout = open("log.txt", "+wb")
-    os.system("tail -f log.txt &")
+    os.system("tailf log.txt &")
     cmd = './btree'
     child = start_proc(cmd)
-    main_test(child,fout)
-    os.system("ps -ef | grep tail | grep -v grep | cut -c 9-15 | xargs kill -9")
+    child.logfile = fout
+    print_prompt()
+    while True:
+        order = input()
+        if order.find('i') != -1:
+            mode = input("sigle/multiple:")
+            if mode.find('s') != -1:
+                key = input("input key:")
+                insert(child, int(key))
+            elif mode.find('m') != -1:
+                num = input("input key number:")
+                batch_insert(child, int(num))
+                show(child)
+        elif order.find('d') != -1:
+            mode = input("sigle/multiple:")
+            if mode.find('s') != -1:
+                key = input("input key:")
+                delete(child, int(key))
+            elif mode.find('m') != -1:
+                num = input("input key number:")
+                batch_delete(child, int(num))
+                show(child)
+        elif order.find('p') != -1:
+            show(child)
+        elif order.find('?') != -1:
+            print_prompt()
+        elif order.find('q') != -1:
+            break
+    os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
     quit_proc(child)
-
+    fout.close()

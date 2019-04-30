@@ -108,8 +108,8 @@ typedef enum
 
 typedef enum
 {
-	MID = 0,
-	LEFT,
+	LEFT = 0,
+	MID,
 	RIGHT,
 	ORDNUM
 }ndflag_t;		//node flag for rotate/merge

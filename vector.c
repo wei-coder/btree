@@ -7,6 +7,10 @@ void aque_init(aque_t * queue){
     queue->len = 0;
 }
 
+void * aq_head(aque_t * queue){
+	return queue->pque[queue->f];
+}
+
 void * aq_pop(aque_t * queue){
     int idx = queue->f;
     if(queue->len == 0)
