@@ -97,6 +97,7 @@ typedef enum
 	DEL_OK = 0,
 	DEL_ROTATE,
 	DEL_MERGE,
+	DEL_UPDATE,
 	DEL_FAIL
 }delv_t;		//delete return value
 

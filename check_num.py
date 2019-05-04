@@ -7,10 +7,13 @@ def parse_log(fd):
     fd.seek(0,0)
     arr = []
     dupnum = 0
+    missnum = 0
     insertnum = 0
+    i_total = 0
     deletenum = 0
     insert_invalid = 0
     delete_invalid = 0
+    d_total = 0
     line = fd.readline()
     while line:
         idx = line.find("please input node id which you want insert:")
@@ -20,6 +23,18 @@ def parse_log(fd):
             arr.append(num)
         if line.find("The key you want insert is exist!") != -1:
             dupnum += 1
+        if line.find("The key you want delete is not exist!") != -1:
+            missnum += 1
+        idx1 = line.find("datas")
+        if idx != -1:
+            idx2 = line.find("B+ Tree have")
+            if idx2 != -1:
+                total = int(line[idx2+13:idx1])
+                if i_total < total:
+                    d_total = i_total
+                    i_total = total
+                else:
+                    d_total = total
         if line.find("success!") != -1:
             if line.find("Insert") != -1:
                 insertnum += 1
@@ -37,9 +52,12 @@ def parse_log(fd):
             arr.remove(i)
     print("dupnum:%d"%dupnum)
     print("insertnum:%d"%insertnum)
-    print("deletenum:%d"%deletenum)
     print("insert invalid number:%d"%insert_invalid)
+    print("Insert total %d datas"%i_total)
+    print("missnum:%d"%missnum)
+    print("deletenum:%d"%deletenum)
     print("delete invalid number:%d"%delete_invalid)
+    print("delete remain %d datas"%d_total)
 
 def check_num(fd,num):
     numstr = str(num)

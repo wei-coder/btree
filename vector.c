@@ -8,7 +8,9 @@ void aque_init(aque_t * queue){
 }
 
 void * aq_head(aque_t * queue){
-	return queue->pque[queue->f];
+	if(queue->len > 0)
+		return queue->pque[queue->f];
+	return NULL;
 }
 
 void * aq_pop(aque_t * queue){

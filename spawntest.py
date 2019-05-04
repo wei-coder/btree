@@ -1,4 +1,4 @@
-#!/usr/local/bin/python3.8
+#!/usr/bin/env python3
 # encoding: utf-8
 
 import pexpect
@@ -9,6 +9,8 @@ import os
 
 q_order = 'q'
 p_order = 'p'
+f_order = 'f'
+s_order = 's'
 d_order = 'd'
 i_order = 'i'
 
@@ -43,12 +45,26 @@ def delete(child, value):
     else:
         print("can not delete node!")
 
-def show(child):
+def draw_tree(child):
     index = child.expect(common)
     if(0 == index):
         child.sendline(p_order)
     else:
-        print("can not show!")
+        print("can not draw!")
+
+def tree_dump(child):
+    index = child.expect(common)
+    if(0 == index):
+        child.sendline(f_order)
+    else:
+        print("can not dump tree!")
+
+def show_info(child):
+    index = child.expect(common)
+    if 0 == index:
+        child.sendline(s_order)
+    else:
+        print("can not show tree info!")
 
 def quit_proc(child):
     child.interact()
@@ -66,10 +82,12 @@ def batch_insert(child,num):
         time.sleep(0.001)
 
 def batch_delete(child,num):
+    data_file = open("tree_data.txt", "+r")
+    line = data_file.readlines()
     for i in range(0, num):
-        value = random.randint(3,1000)
+        idx = random.randint(0,100)
 #        value = i
-        delete(child,value)
+        delete(child,int(line[idx]))
         time.sleep(0.001)
 
 
@@ -88,7 +106,7 @@ if __name__=='__main__':
     os.system('rm -rf *.txt')
     os.system('./gcc.sh')
     fout = open("log.txt", "+wb")
-    os.system("tailf log.txt &")
+    os.system("tail -f log.txt &")
     cmd = './btree'
     child = start_proc(cmd)
     child.logfile = fout
@@ -100,10 +118,13 @@ if __name__=='__main__':
             if mode.find('s') != -1:
                 key = input("input key:")
                 insert(child, int(key))
+                cout += 1
             elif mode.find('m') != -1:
                 num = input("input key number:")
                 batch_insert(child, int(num))
-                show(child)
+                tree_dump(child)
+                draw_tree(child)
+                show_info(child)
         elif order.find('d') != -1:
             mode = input("sigle/multiple:")
             if mode.find('s') != -1:
@@ -112,13 +133,17 @@ if __name__=='__main__':
             elif mode.find('m') != -1:
                 num = input("input key number:")
                 batch_delete(child, int(num))
-                show(child)
+                tree_dump(child)
+                draw_tree(child)
+                show_info(child)
         elif order.find('p') != -1:
-            show(child)
+            draw_tree(child)
         elif order.find('?') != -1:
             print_prompt()
+        elif order.find('s') != -1:
+            show_info(child)
         elif order.find('q') != -1:
             break
-    os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
+    os.system("ps -ef | grep tail | grep -v grep | cut -c 9-15 | xargs kill -9")
     quit_proc(child)
     fout.close()

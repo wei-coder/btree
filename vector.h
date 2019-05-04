@@ -90,6 +90,7 @@ static inline int list_empty(const struct list_head *head)
 }
 
 void aque_init(aque_t * queue);
+void * aq_head(aque_t * queue);
 void * aq_pop(aque_t * queue);
 void aq_push(aque_t * queue, void * ptr);
 void lque_init(lque_t * queue);
