@@ -181,12 +181,10 @@ void bt_branch_real_del(btinter_t * pbranch, int idx){
 
 /*del array elem for inter node*/
 delv_t bt_branch_del(btnode_t * pNode, int idx){
-	if(pNode->bn_inter.bn_num-1 >= INTER_KEY_NUM/2){
-		bt_branch_real_del(&pNode->bn_inter, idx);
+	bt_branch_real_del(&pNode->bn_inter, idx);
+	if(pNode->bn_inter.bn_num >= INTER_KEY_NUM/2){
 		return DEL_OK;
 	}
-
-	bt_branch_real_del(&pNode->bn_inter, idx);
 	return DEL_FAIL;
 }
 
@@ -301,26 +299,19 @@ static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode
 static inline void bt_branch_merge(btnode_t * pleft, btnode_t * pmid, btnode_t * pright, merge_t*  bmerg){
 	int num = 0;
 	int move_num = 0;
-	if(pleft == NULL){
-		
+	if((pleft == NULL) ||(pleft != NULL && pleft != NULL && pleft->bn_inter.bn_num >= pright->bn_inter.bn_num)){
+		num = (pright->bn_inter.bn_num + pmid->bn_inter.bn_num)/2;
+		move_num = pright->bn_inter.bn_num;
+		bt_branch_move2left(&pright->bn_inter, &pmid->bn_inter,move_num);
+		bmerg->updkey = pmid->bn_inter.bn_entry[pmid->bn_inter.bn_num-1].bn_key;
+		bmerg->node = RIGHT;
 	}
-	else if(pright == NULL){
-	}
-	else{
-		if(pleft->bn_inter.bn_num > pright->bn_inter.bn_num){
-			num = (pright->bn_inter.bn_num + pmid->bn_inter.bn_num)/2;
-			move_num = pright->bn_inter.bn_num;
-			bt_branch_move2left(&pright->bn_inter, &pmid->bn_inter,move_num);
-			bmerg->updkey = pmid->bn_inter.bn_entry[pmid->bn_inter.bn_num-1].bn_key;
-			bmerg->node = RIGHT;
-		}
-		else{
-			num = (pleft->bn_inter.bn_num + pmid->bn_inter.bn_num)/2;
-			move_num = pleft->bn_inter.bn_num;
-			bt_branch_move2right(&pleft->bn_inter, &pmid->bn_inter, move_num);
-			bmerg->updkey = pmid->bn_inter.bn_entry[pmid->bn_inter.bn_num-1].bn_key;
-			bmerg->node = LEFT;
-		}
+	else if((pright == NULL) || (pleft != NULL && pleft != NULL && pleft->bn_inter.bn_num <= pright->bn_inter.bn_num)){
+		num = (pleft->bn_inter.bn_num + pmid->bn_inter.bn_num)/2;
+		move_num = pleft->bn_inter.bn_num;
+		bt_branch_move2right(&pleft->bn_inter, &pmid->bn_inter, move_num);
+		bmerg->updkey = pmid->bn_inter.bn_entry[pmid->bn_inter.bn_num-1].bn_key;
+		bmerg->node = LEFT;
 	}
 }
 
@@ -932,6 +923,8 @@ int bt_del(bptree_t * ptree, btk_t key){
 	btnode_t * pleft = NULL;
 	btnode_t * pright = NULL;
 	btnode_t * pmid = NULL;
+	btnode_t * plfather = NULL;
+	btnode_t * prfather = NULL;
 	int idx = 0;
 	int total = 0;
 	int bc_num = 0;
@@ -949,6 +942,7 @@ int bt_del(bptree_t * ptree, btk_t key){
 			bc_num = 0;
 			if(idx == 0){
 				if(i > 0 && path[i-1].idx > 0){
+					plfather = 
 					pleft = path[i-1].pNode->bn_inter.bn_entry[path[i-1].pNode->bn_inter.bn_num-1].bn_ptr.bn_ptr;
 					total += pleft->bn_leaf.bn_num;
 					bc_num += 1;
@@ -970,7 +964,7 @@ int bt_del(bptree_t * ptree, btk_t key){
 				}
 				else{
 					pright = NULL;
-					log_debug("Fatal: Root node have no right brother,please check!\n");
+					log_debug("Fatal: Root node have no right brother,please check! idx:%d max num:%d\n", idx, tmpNode->bn_inter.bn_num);
 				}
 			}
 			else{
@@ -1048,9 +1042,15 @@ int bt_del(bptree_t * ptree, btk_t key){
 				else{
 					ret = DEL_OK;
 					bt_rotate(tmpNode, idx, key, &rot_info, ROT_DEL);
-					ret += bt_branch_update(tmpNode, idx);
-					ret += bt_branch_update(tmpNode, idx-1);
-					ret += bt_branch_update(tmpNode, idx+1);
+					if(0 != rot_info.leftkey.bn_key){
+						ret += bt_branch_update(tmpNode, idx-1);
+					}
+					if(0 != rot_info.updkey.bn_key){
+						ret += bt_branch_update(tmpNode, idx);
+					}
+					if(0 != rot_info.updkey.bn_key){
+						ret += bt_branch_update(tmpNode, idx);
+					}
 					ret = ret==DEL_OK?DEL_OK:DEL_UPDATE;
 				}
 			}
