@@ -136,7 +136,9 @@ typedef struct
 
 typedef struct
 {
-	btnode_t * pNode;
+	btnode_t * pleft;
+	btnode_t * pmid;
+	btnode_t * pright;
 	int idx;
 }btpath_t;
 

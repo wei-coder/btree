@@ -105,8 +105,8 @@ if __name__=='__main__':
     os.system('rm -rf core.*')
     os.system('rm -rf *.txt')
     os.system('./gcc.sh')
-    fout = open("log.txt", "+wb")
-    os.system("tail -f log.txt &")
+    fout = open("log.txt", "wb")
+    os.system("tailf log.txt &")
     cmd = './btree'
     child = start_proc(cmd)
     child.logfile = fout
@@ -144,6 +144,6 @@ if __name__=='__main__':
             show_info(child)
         elif order.find('q') != -1:
             break
-    os.system("ps -ef | grep tail | grep -v grep | cut -c 9-15 | xargs kill -9")
+    os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
     quit_proc(child)
     fout.close()
