@@ -30,7 +30,7 @@ def insert(child, value):
         else:
             print("timeout!")
     else:
-        show(child)
+        draw_tree(child)
         print("can not insert node!")
 
 def delete(child, value):

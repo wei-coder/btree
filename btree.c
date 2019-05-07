@@ -211,6 +211,7 @@ static inline void bt_branch_move2right(btinter_t * psrc, btinter_t * pdst, int 
 
 static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode_t * pNode2, rotate_t*  pbrot, rot_t mode){
 	int num[ORDNUM] = {0};
+	btk_t oldkey[ORDNUM] = {0};
 	int total = 0;
 	int bc_num = 0;
 	btinter_t * pleft = NULL;
@@ -219,25 +220,22 @@ static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode
 	if(NULL != pNode0){
 		total += pNode0->bn_inter.bn_num;
 		pleft = &pNode0->bn_inter;
+		oldkey[LEFT] = pleft->bn_entry[pleft->bn_num-1].bn_key;
 		bc_num++;
 	}
 	if(NULL != pNode2){
 		total += pNode2->bn_inter.bn_num;
 		pright = &pNode2->bn_inter;
+		oldkey[RIGHT] = pright->bn_entry[pright->bn_num-1].bn_key;
 		bc_num++;
 	}
 	bc_num++;
 	pmid = &pNode1->bn_inter;
-	if(ROT_ADD == mode){
-		equal_divi((total + INTER_KEY_NUM+1), bc_num, num);
-	}
-	else if(ROT_DEL == mode){
-		equal_divi((total + INTER_KEY_NUM/2 - 1), bc_num, num);
-	}
+	oldkey[MID] = pmid->bn_entry[pmid->bn_num-1].bn_key;
+	total += pmid->bn_num;
+	equal_divi(total, bc_num, num);
 
-	int i;
 	int move_num = 0;
-	int idx = 0;
 	if(pleft != NULL && pright != NULL){
 		/*left->this->right this mode need order*/
 		if((num[LEFT] < pleft->bn_num)&&
@@ -261,7 +259,7 @@ static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode
 		}
 	}
 	/*in other situation, we can rotate two leaf along*/
-	if(NULL != pleft){
+	else if(NULL != pleft){
 		/*left->this*/
 		if(num[LEFT] < pleft->bn_num){
 			move_num = pleft->bn_num - num[LEFT];
@@ -274,11 +272,13 @@ static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode
 			bt_branch_move2left(pmid, pleft, move_num);
 		}
 		
-		pbrot->leftkey = pleft->bn_entry[pleft->bn_num-1].bn_key;
 	}
 
-	if(NULL != pright){
+	else if(NULL != pright){
 		/*this->right*/
+		num[RIGHT] = num[MID];
+		num[MID] = num[LEFT];
+		num[LEFT] = 0;
 		if(num[RIGHT] > pright->bn_num){
 			move_num = num[RIGHT] - pright->bn_num;
 			bt_branch_move2right(pmid, pright, move_num);
@@ -290,10 +290,21 @@ static inline void bt_branch_rotate(btnode_t * pNode0, btnode_t * pNode1, btnode
 			bt_branch_move2left(pright, pmid, move_num);
 		}
 		
+	}
+	if((NULL != pleft) && (0 != bt_key_cmp(oldkey[LEFT], pleft->bn_entry[pleft->bn_num-1].bn_key))){
+		pbrot->leftkey = pleft->bn_entry[pleft->bn_num-1].bn_key;
+	}
+	else{
+		pbrot->leftkey.bn_key = 0;
+	}
+	pbrot->updkey = pmid->bn_entry[pmid->bn_num-1].bn_key;
+
+	if((NULL != pright) && (0 != bt_key_cmp(oldkey[RIGHT], pright->bn_entry[pright->bn_num-1].bn_key))){
 		pbrot->rightkey = pright->bn_entry[pright->bn_num-1].bn_key;
 	}
-
-	pbrot->updkey = pmid->bn_entry[pmid->bn_num-1].bn_key;
+	else{
+		pbrot->rightkey.bn_key = 0;
+	}
 }
 
 static inline void bt_branch_merge(btnode_t * pleft, btnode_t * pmid, btnode_t * pright, merge_t*  bmerg){
@@ -381,27 +392,35 @@ static inline void bt_leaf_real_add(btleaf_t * pleaf, int idx, btk_t key){
 }
 
 /*leaf node and brother node rotate*/
-static inline void bt_leaf_rotate(btleaf_t ** pleaf_arr, int idx, int len, btk_t key, rotate_t * pinfo, rot_t mode){
+static inline void bt_leaf_rotate(btnode_t * plNode, btnode_t * pmNode, btnode_t * prNode, int idx, btk_t key, rotate_t * pinfo, rot_t mode){
 	int i;
 	int value = 0;
-	for(i=0; i<len; i++){
-		value += pleaf_arr[i]->bn_num;
-	}
-
+	int node_num = 0;
 	btk_t oldkey[ORDNUM] = {0};
-	int num[ORDNUM] = {0};
-	equal_divi(value, len, num);
-
-	int move_num = 0;
+	btleaf_t * pleft = NULL;
+	btleaf_t * pmid = NULL;
+	btleaf_t * pright = NULL;
 	btleaf_t * target = NULL;
-	if(3 == len)
-	{
-		btleaf_t * pleft = pleaf_arr[0];
-		btleaf_t * pmid = pleaf_arr[1];
-		btleaf_t * pright = pleaf_arr[2];
+	if(NULL != plNode){
+		pleft = &plNode->bn_leaf;
+		value += pleft->bn_num;
 		oldkey[LEFT] = pleft->bn_data[pleft->bn_num-1];
-		oldkey[MID] = pmid->bn_data[pmid->bn_num-1];
+		node_num ++;
+	}
+	if(NULL != prNode){
+		pright = &prNode->bn_leaf;
+		value += pright->bn_num;
 		oldkey[RIGHT] = pright->bn_data[pright->bn_num-1];
+		node_num ++;
+	}
+	pmid = &pmNode->bn_leaf;
+	value += pmid->bn_num;
+	oldkey[MID] = pmid->bn_data[pmid->bn_num-1];
+	node_num++;
+	int num[ORDNUM] = {0};
+	equal_divi(value, node_num, num);
+	int move_num = 0;
+	if(pleft != NULL && pright != NULL){
 		idx += pleft->bn_num;
 		if(ROT_ADD == mode){
 			if(idx < num[LEFT]){
@@ -429,6 +448,43 @@ static inline void bt_leaf_rotate(btleaf_t ** pleaf_arr, int idx, int len, btk_t
 				idx -= (num[LEFT] + num[MID]);
 			}
 		}
+	}
+	/*in other situation, we can rotate two leaf along*/
+	else if(NULL != pleft){
+		idx += pleft->bn_num;
+		if(ROT_ADD == mode){
+			if(idx < num[LEFT]-1){
+				target = pleft;
+				if(num[LEFT] >= LEAF_KEY_NUM){
+					num[LEFT]--;
+					num[MID]++;
+				}
+			}
+			else{
+				idx -= num[LEFT];
+				target = pmid;
+			}
+		}
+	}
+	else if(NULL != pright){
+		num[RIGHT] = num[MID];
+		num[MID] = num[LEFT];
+		num[LEFT] = 0;
+		if(ROT_ADD == mode){
+			if(idx < num[MID]){
+				target = pmid;
+				if(num[MID] >= LEAF_KEY_NUM){
+					num[MID]--;
+					num[RIGHT]++;
+				}
+			}
+			else{
+				idx -= num[MID];
+				target = pright;
+			}
+		}
+	}
+	if(NULL != pleft && NULL != pright){
 		/*left->this->right this mode need order*/
 		if((num[LEFT] < pleft->bn_num)&&
 			(num[RIGHT] > pright->bn_num)){
@@ -449,139 +505,89 @@ static inline void bt_leaf_rotate(btleaf_t ** pleaf_arr, int idx, int len, btk_t
 			move_num = pright->bn_num - num[RIGHT];
 			bt_leaf_move2left(pright, pmid, move_num);
 		}
-		/*in other situation, we can rotate two leaf along*/
-		else{
-			/*left->this*/
-			if(num[LEFT] < pleft->bn_num){
-				move_num = pleft->bn_num - num[LEFT];
-				bt_leaf_move2right(pleft, pmid, move_num);
-			}
-
-			/*this->right*/
-			if(num[RIGHT] > pright->bn_num){
-				move_num = num[RIGHT] - pright->bn_num;
-				bt_leaf_move2right(pmid, pright, move_num);
-			}
-
-			/*right->this*/
-			if(num[RIGHT] < pright->bn_num){
-				move_num = pright->bn_num - num[RIGHT];
-				bt_leaf_move2left(pright, pmid, move_num);
-			}
-
-			/*this->left*/
-			if(num[LEFT] > pleft->bn_num){
-				move_num = num[LEFT] - pleft->bn_num;
-				bt_leaf_move2left(pmid, pleft, move_num);
-			}
-		}
-		if(ROT_ADD == mode){
-			bt_leaf_real_add(target, idx, key);
-		}
-		if(0 == bt_key_cmp(oldkey[MID],pmid->bn_data[pmid->bn_num-1])){
-			pinfo->updkey.bn_key = 0;
-		}
-		else{
-			pinfo->updkey = pmid->bn_data[pmid->bn_num-1];
-		}
-		if(0 == bt_key_cmp(oldkey[LEFT], pleft->bn_data[pleft->bn_num-1])){
-			pinfo->leftkey.bn_key = 0;
-		}
-		else{
-			pinfo->leftkey = pleft->bn_data[pleft->bn_num-1];
-		}
-		if(0 == bt_key_cmp(oldkey[RIGHT], pright->bn_data[pright->bn_num-1])){
-			pinfo->rightkey.bn_key = 0;
-		}
-		else{
-			pinfo->rightkey = pright->bn_data[pright->bn_num-1];
-		}
 	}
-	else if(2 == len){
-		oldkey[0] = pleaf_arr[0]->bn_data[pleaf_arr[0]->bn_num-1];
-		oldkey[1] = pleaf_arr[1]->bn_data[pleaf_arr[1]->bn_num-1];
-		if(ROT_ADD == mode){
-			if(bt_key_cmp(key, pleaf_arr[0]->bn_data[pleaf_arr[0]->bn_num-1]) < 0){
-				if(idx < num[0]){
-					target = pleaf_arr[0];
-					if(num[0] >= LEAF_KEY_NUM){
-						num[0] -= 1;
-						num[1] += 1;
-					}
-				}
-				else{
-					target = pleaf_arr[1];
-					idx -= num[0];
-				}
-			}
-			else {
-				idx += pleaf_arr[0]->bn_num;
-				if(idx < num[0]){
-					target = pleaf_arr[0];
-					if(num[0] >= LEAF_KEY_NUM){
-						num[0] -= 1;
-						num[1] += 1;
-					}
-				}
-				else{
-					target = pleaf_arr[1];
-					idx -= num[0];
-				}
-			}
-		}
-		/*move to right*/
-		if(num[0] < pleaf_arr[0]->bn_num){
-			move_num = pleaf_arr[0]->bn_num - num[0];
-			bt_leaf_move2right(pleaf_arr[0], pleaf_arr[1], move_num);
-		}
-		else if(num[1] < pleaf_arr[1]->bn_num){
-			move_num = num[0] - pleaf_arr[0]->bn_num;
-			bt_leaf_move2left(pleaf_arr[1], pleaf_arr[0], move_num);
+
+	if(NULL != pleft){
+		/*left->this*/
+		if(num[LEFT] < pleft->bn_num){
+			move_num = pleft->bn_num - num[LEFT];
+			bt_leaf_move2right(pleft, pmid, move_num);
 		}
 		
-		if(ROT_ADD == mode){
-			bt_leaf_real_add(target, idx, key);
+		/*this->left*/
+		if(num[LEFT] > pleft->bn_num){
+			move_num = num[LEFT] - pleft->bn_num;
+			bt_leaf_move2left(pmid, pleft, move_num);
 		}
-		if(0 == bt_key_cmp(oldkey[0], pleaf_arr[0]->bn_data[pleaf_arr[0]->bn_num-1])){
-			pinfo->leftkey.bn_key = 0;
+	}
+
+	if(NULL != pright){
+		/*this->right*/
+		if(num[RIGHT] > pright->bn_num){
+			move_num = num[RIGHT] - pright->bn_num;
+			bt_leaf_move2right(pmid, pright, move_num);
 		}
-		else{
-			pinfo->leftkey = pleaf_arr[0]->bn_data[pleaf_arr[0]->bn_num-1];
+		
+		/*right->this*/
+		if(num[RIGHT] < pright->bn_num){
+			move_num = pright->bn_num - num[RIGHT];
+			bt_leaf_move2left(pright, pmid, move_num);
 		}
-		if(0 == bt_key_cmp(oldkey[1], pleaf_arr[1]->bn_data[pleaf_arr[1]->bn_num-1])){
-			pinfo->rightkey.bn_key = 0;
-		}
-		else{
-			pinfo->rightkey = pleaf_arr[1]->bn_data[pleaf_arr[1]->bn_num-1];
-		}
+	}
+
+	if(ROT_ADD == mode){
+		bt_leaf_real_add(target, idx, key);
+	}
+	if(0 == bt_key_cmp(oldkey[MID],pmid->bn_data[pmid->bn_num-1])){
+		pinfo->updkey.bn_key = 0;
+	}
+	else{
+		pinfo->updkey = pmid->bn_data[pmid->bn_num-1];
+	}
+	if(NULL != pleft && 0 != bt_key_cmp(oldkey[LEFT], pleft->bn_data[pleft->bn_num-1])){
+		pinfo->leftkey = pleft->bn_data[pleft->bn_num-1];
+	}
+	else{
+		pinfo->leftkey.bn_key = 0;
+	}
+	if(NULL != pright && 0 != bt_key_cmp(oldkey[RIGHT], pright->bn_data[pright->bn_num-1])){
+		pinfo->rightkey = pright->bn_data[pright->bn_num-1];
+	}
+	else{
+		pinfo->rightkey.bn_key = 0;
 	}
 }
 
 /*add array elem for leaf node*/
-istv_t bt_leaf_add(btnode_t * pNode, int idx, btk_t key, spt_info_t * psplit, rotate_t * protate){
-	btleaf_t * pleft = (btleaf_t *)pNode->bn_leaf.lnode.prev;
+istv_t bt_leaf_add(btpath_t path_node, btk_t key, spt_info_t * psplit, rotate_t * protate){
+	btnode_t * pleft = NULL;
+	btnode_t * pright = NULL;
+	btnode_t * pmid = NULL;
 	int lnum = 0x0FFFFFFF;
-	if(NULL != pleft){
-		lnum = pleft->bn_num;
+	if(NULL != path_node.pleft){
+		pleft = path_node.pleft;
+		lnum = pleft->bn_leaf.bn_num;
 	}
-	btleaf_t * pright = (btleaf_t *)pNode->bn_leaf.lnode.next;
 	int rnum = 0x0FFFFFFF;
-	if(NULL != pright){
-		rnum = pright->bn_num;
+	if(NULL != path_node.pright){
+		pright = path_node.pright;
+		rnum = pright->bn_leaf.bn_num;
 	}
-	if(pNode->bn_leaf.bn_num >= LEAF_KEY_NUM){
+	pmid = path_node.pmid;
+	int idx = path_node.idx;
+	if(pmid->bn_leaf.bn_num >= LEAF_KEY_NUM){
 		if((lnum >= LEAF_KEY_NUM)&&
 			(rnum >= LEAF_KEY_NUM)){
 			btnode_t * pnewNode = NULL;
-			if(BTREE_FAIL == bt_leaf_split(pNode, &pnewNode)){
+			if(BTREE_FAIL == bt_leaf_split(pmid, &pnewNode)){
 				return IST_FAIL;
 			}
 			if(NULL == pnewNode){
 				return IST_FAIL;
 			}
-			int ret = bt_key_cmp(key, pNode->bn_leaf.bn_data[pNode->bn_leaf.bn_num-1]);
+			int ret = bt_key_cmp(key, pmid->bn_leaf.bn_data[pmid->bn_leaf.bn_num-1]);
 			if(ret < 0){
-				bt_leaf_real_add(&pNode->bn_leaf, idx, key);
+				bt_leaf_real_add(&pmid->bn_leaf, idx, key);
 			}
 			else{
 				idx = bt_search_leaf(pnewNode, key);
@@ -590,49 +596,26 @@ istv_t bt_leaf_add(btnode_t * pNode, int idx, btk_t key, spt_info_t * psplit, ro
 				}
 				bt_leaf_real_add(&pnewNode->bn_leaf, idx, key);
 			}
-			psplit->updkey = pNode->bn_leaf.bn_data[pNode->bn_leaf.bn_num-1];
+			psplit->updkey = pmid->bn_leaf.bn_data[pmid->bn_leaf.bn_num-1];
 			psplit->newidx.bn_key = pnewNode->bn_leaf.bn_data[pnewNode->bn_leaf.bn_num-1];
 			psplit->newidx.bn_ptr.bn_ptr = pnewNode;
 			return IST_SPLIT;
 		}
 		else{
-			btleaf_t * leaf_arr[3] = {0};
-			if(NULL != pleft && NULL != pright){
-				leaf_arr[0] = pleft;
-				leaf_arr[1] = &pNode->bn_leaf;
-				leaf_arr[2] = pright;
-				bt_leaf_rotate(leaf_arr, idx, 3, key, protate, ROT_ADD);
-			}
-			else if(NULL != pleft){
-				leaf_arr[0] = pleft;
-				leaf_arr[1] = &pNode->bn_leaf;
-				bt_leaf_rotate(leaf_arr, idx, 2, key, protate, ROT_ADD);
-				protate->updkey = protate->rightkey;
-				protate->rightkey.bn_key = 0;
-			}
-			else if(NULL != pright){
-				leaf_arr[0] = &pNode->bn_leaf;
-				leaf_arr[1] = pright;
-				bt_leaf_rotate(leaf_arr, idx, 2, key, protate, ROT_ADD);
-				protate->updkey = protate->leftkey;
-				protate->leftkey.bn_key = 0;
-			}
-			else{
-				log_debug(" left & right are both NULL,please check!\n");
-			}
+			bt_leaf_rotate(pleft, pmid, pright, idx, key, protate, ROT_ADD);
 			return IST_ROTATE;
 		}
 	}
 
-	int oldnum = pNode->bn_leaf.bn_num;
-	btk_t oldkey = pNode->bn_leaf.bn_data[oldnum-1];
-	bt_leaf_real_add(&pNode->bn_leaf, idx, key);
-	if(pNode->bn_leaf.bn_num-oldnum < 1){
-		log_debug("Add data num:%d failed, please check!\n",pNode->bn_leaf.bn_num-oldnum);
+	int oldnum = pmid->bn_leaf.bn_num;
+	btk_t oldkey = pmid->bn_leaf.bn_data[oldnum-1];
+	bt_leaf_real_add(&pmid->bn_leaf, idx, key);
+	if(pmid->bn_leaf.bn_num-oldnum < 1){
+		log_debug("Add data num:%d failed, please check!\n",pmid->bn_leaf.bn_num-oldnum);
 		return IST_FAIL;
 	}
-	else if(bt_key_cmp(oldkey, pNode->bn_leaf.bn_data[pNode->bn_leaf.bn_num-1])<0){
-		protate->updkey = pNode->bn_leaf.bn_data[pNode->bn_leaf.bn_num-1];
+	else if(bt_key_cmp(oldkey, pmid->bn_leaf.bn_data[pmid->bn_leaf.bn_num-1])<0){
+		protate->updkey = pmid->bn_leaf.bn_data[pmid->bn_leaf.bn_num-1];
 		protate->leftkey.bn_key = 0;
 		protate->rightkey.bn_key = 0;
 		return IST_UPDATE;
@@ -715,69 +698,6 @@ static inline int bt_branch_update(btnode_t * pNode, int idx){
 	return IST_OK;
 }
 
-static inline void bt_merge(btnode_t * pfather, int idx, merge_t * pinfo){
-	btnode_t * pmid = (btnode_t *)pfather->bn_inter.bn_entry[idx].bn_ptr.bn_ptr;
-	btnode_t * pleft = NULL;
-	btnode_t * pright = NULL;
-	if(idx>0){
-		pleft = (btnode_t *)pfather->bn_inter.bn_entry[idx-1].bn_ptr.bn_ptr;
-	}
-	if(idx < pfather->bn_inter.bn_num-1){
-		pright = (btnode_t *)pfather->bn_inter.bn_entry[idx+1].bn_ptr.bn_ptr;
-	}
-	if(TYPE_LEAF == pmid->bn_type){
-		bt_leaf_merge(pleft, pmid, pright, pinfo);
-	}
-	else{
-		bt_branch_merge(pleft, pmid, pright, pinfo);
-	}
-}
-
-static inline void bt_rotate(btnode_t * pfather, int idx, btk_t key, rotate_t * pinfo, rot_t mode){
-	int node_num = 0;
-	btnode_t * pmid = (btnode_t *)pfather->bn_inter.bn_entry[idx].bn_ptr.bn_ptr;
-	btnode_t * pleft = NULL;
-	btnode_t * pright = NULL;
-	if(idx>0){
-		pleft = (btnode_t *)pfather->bn_inter.bn_entry[idx-1].bn_ptr.bn_ptr;
-	}
-	if(idx < pfather->bn_inter.bn_num-1){
-		pright = (btnode_t *)pfather->bn_inter.bn_entry[idx+1].bn_ptr.bn_ptr;
-	}
-	if(TYPE_LEAF == pmid->bn_type){
-		btleaf_t * leaf_arr[3] = {0};
-		node_num = 2;
-		if(NULL == pleft){
-			leaf_arr[0] = &pmid->bn_leaf;
-			leaf_arr[1] = &pright->bn_leaf;
-		}
-		else if(NULL == pright){
-			leaf_arr[0] = &pleft->bn_leaf;
-			leaf_arr[1] = &pmid->bn_leaf;
-		}
-		else{
-			leaf_arr[0] = &pleft->bn_leaf;
-			leaf_arr[1] = &pmid->bn_leaf;
-			leaf_arr[2] = &pright->bn_leaf;
-			node_num = 3;
-		}
-		bt_leaf_rotate(leaf_arr, idx, node_num, key, pinfo, mode);
-		if(2 == node_num){
-			if(NULL == pleft){
-				pinfo->updkey = pinfo->leftkey;
-				pinfo->leftkey.bn_key = 0;
-			}
-			else if(NULL == pright){
-				pinfo->updkey = pinfo->rightkey;
-				pinfo->rightkey.bn_key = 0;
-			}
-		}
-	}
-	else{
-		bt_branch_rotate(pleft, pmid, pright, pinfo, mode);
-	}
-}
-
 int bt_insert(bptree_t * ptree, btk_t key){
 	btpath_t path[BT_LVL_ROOT] = {0};
 	btnode_t * tmpNode = ptree->bpt_root;
@@ -786,27 +706,35 @@ int bt_insert(bptree_t * ptree, btk_t key){
 	int idx = 0;
 	int i;
 	for(i=0; i<ptree->bpt_level; i++){
-		path[i].pNode = tmpNode;
-		if(tmpNode->bn_type != TYPE_LEAF){
-			path[i].idx = bt_search_branch(tmpNode, key);
+		path[i].pleft = tmpLeft;
+		path[i].pmid = tmpNode;
+		path[i].pright = tmpRight;
+		if(path[i].pmid->bn_type != TYPE_LEAF){
+			path[i].idx = bt_search_branch(path[i].pmid, key);
 			if(path[i].idx == BTREE_FAIL){
-				path[i].idx = tmpNode->bn_inter.bn_num-1;
+				path[i].idx = path[i].pmid->bn_inter.bn_num-1;
 			}
-			tmpNode = tmpNode->bn_inter.bn_entry[path[i].idx].bn_ptr.bn_ptr;
-			#if 1
-			if(NULL == tmpNode){
-				log_debug("Node branch num:%d, idx:%d\n", path[i].pNode->bn_inter.bn_num, path[i].idx);
-				return BTREE_FAIL;
+			if(path[i].idx > 0){
+				tmpLeft = path[i].pmid->bn_inter.bn_entry[path[i].idx-1].bn_ptr.bn_ptr;
 			}
-			#endif
+			else if(NULL != tmpLeft){
+				tmpLeft = tmpLeft->bn_inter.bn_entry[tmpLeft->bn_inter.bn_num-1].bn_ptr.bn_ptr;
+			}
+			tmpNode = path[i].pmid->bn_inter.bn_entry[path[i].idx].bn_ptr.bn_ptr;
+			if(path[i].idx < path[i].pmid->bn_inter.bn_num-1){
+				tmpRight = path[i].pmid->bn_inter.bn_entry[path[i].idx+1].bn_ptr.bn_ptr;
+			}
+			else if(NULL != tmpRight){
+				tmpRight = tmpRight->bn_inter.bn_entry[0].bn_ptr.bn_ptr;
+			}
 		}
 		else{
 			path[i].idx = bt_search_leaf(tmpNode, key);
 			if(path[i].idx == BTREE_FAIL){
-				if(tmpNode->bn_leaf.bn_num == 0)
+				if(path[i].pmid->bn_leaf.bn_num == 0)
 					path[i].idx = 0;
 				else
-					path[i].idx = tmpNode->bn_leaf.bn_num-1;
+					path[i].idx = path[i].pmid->bn_leaf.bn_num-1;
 			}
 			else if(bt_key_cmp(key, tmpNode->bn_leaf.bn_data[path[i].idx]) == 0){
 				log_debug("The key you want insert is exist!\n");
@@ -818,51 +746,68 @@ int bt_insert(bptree_t * ptree, btk_t key){
 	spt_info_t spt_info = {0};
 	rotate_t rot_info = {0};
 	istv_t ret = IST_FAIL;
+	btnode_t * pleft = NULL;
+	btnode_t * pright = NULL;
+	btnode_t * pmid = NULL;
 	for(i=ptree->bpt_level-1; i>=0; i--){
 		if(IST_OK == ret){
-				break;
+			break;
 		}
-		tmpNode = path[i].pNode;
-		idx = path[i].idx;
-		if(TYPE_LEAF == tmpNode->bn_type){
-			ret = bt_leaf_add(path[i].pNode, idx, key, &spt_info, &rot_info);
+		if(TYPE_LEAF == path[i].pmid->bn_type){
+			ret = bt_leaf_add(path[i], key, &spt_info, &rot_info);
 		}
 		else{
+			if(path[i].idx == 0){
+				if(NULL != path[i].pleft){
+					pleft = path[i].pleft->bn_inter.bn_entry[path[i].pleft->bn_inter.bn_num-1].bn_ptr.bn_ptr;
+				}
+				else{
+					pleft = NULL;
+				}
+			}
+			else{
+				pleft = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx-1].bn_ptr.bn_ptr;
+			}
+			if(path[i].idx >= path[i].pmid->bn_inter.bn_num-1){
+				if(NULL != path[i].pright){
+					pright = path[i].pright->bn_inter.bn_entry[0].bn_ptr.bn_ptr;
+				}
+				else{
+					pright = NULL;
+				}
+			}
+			else{
+				pright = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx+1].bn_ptr.bn_ptr;
+			}
+			pmid = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx].bn_ptr.bn_ptr;
 			if(IST_SPLIT== ret){
-				bt_branch_update(tmpNode, idx);
-				bti_t newIdx = {0};
-				newIdx.bn_key = spt_info.newidx.bn_key;
-				newIdx.bn_ptr = spt_info.newidx.bn_ptr;
-				ret = bt_branch_add(tmpNode, newIdx, &spt_info, &rot_info);
+				bt_branch_update(path[i].pmid, path[i].idx);
+				ret = bt_branch_add(path[i].pmid, spt_info.newidx, &spt_info, &rot_info);
 			}
 			else if((IST_UPDATE == ret) || (IST_ROTATE == ret)){
 				if(0 != rot_info.leftkey.bn_key){
-					if(idx == 0){
-						if(i>0){
-							btnode_t * tmpleft = path[i-1].pNode->bn_inter.bn_entry[path[i-1].idx-1].bn_ptr.bn_ptr;
-							ret += bt_branch_update(tmpleft, tmpleft->bn_inter.bn_num-1);
+					if(0 == path[i].idx){
+						if(NULL != path[i].pleft){
+							ret += bt_branch_update(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
 						}
 					}
 					else{
-						ret += bt_branch_update(tmpNode, idx-1);
+						ret += bt_branch_update(path[i].pmid, path[i].idx-1);
 					}
 				}
 				
 				if(0 != rot_info.updkey.bn_key){
-					ret += bt_branch_update(tmpNode, idx);
+					ret += bt_branch_update(path[i].pmid, path[i].idx);
 				}
 
 				if(0 != rot_info.rightkey.bn_key){
-					if(idx == tmpNode->bn_inter.bn_num-1){
-						if(i>0){
-							ret += bt_branch_update(path[i-1].pNode->bn_inter.bn_entry[path[i-1].idx+1].bn_ptr.bn_ptr, 0);
-						}
-						else{
-							log_debug("Fatal: Root node have no right brother,please check!\n");
+					if(path[i].pmid->bn_inter.bn_num-1 == path[i].idx){
+						if(NULL != path[i].pright){
+							ret += bt_branch_update(path[i].pright, 0);
 						}
 					}
 					else{
-						ret += bt_branch_update(tmpNode, idx+1);
+						ret += bt_branch_update(path[i].pmid, path[i].idx+1);
 					}
 				}
 				ret = ret==IST_OK?IST_OK:IST_UPDATE;
@@ -876,6 +821,7 @@ int bt_insert(bptree_t * ptree, btk_t key){
 		/*in this situation, need increasing new level*/
 		btnode_t * newroot = bt_new_node(TYPE_INT);
 		btnode_t * newbranch = (btnode_t *)spt_info.newidx.bn_ptr.bn_ptr;
+		btnode_t * tmpNode = ptree->bpt_root;
 		btp_t ptr;
 		if(NULL == newroot){
 			log_debug("alloc new root for increase new level failed!\n");
@@ -966,10 +912,8 @@ int bt_del(bptree_t * ptree, btk_t key){
 			total = 0;
 			bc_num = 0;
 			if(path[i].idx == 0){
-				if(NULL != path[i].pleft)){
+				if(NULL != path[i].pleft){
 					pleft = path[i].pleft->bn_inter.bn_entry[path[i].pleft->bn_inter.bn_num-1].bn_ptr.bn_ptr;
-					total += pleft->bn_leaf.bn_num;
-					bc_num += 1;
 				}
 				else{
 					pleft = NULL;
@@ -977,14 +921,19 @@ int bt_del(bptree_t * ptree, btk_t key){
 			}
 			else{
 				pleft = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx-1].bn_ptr.bn_ptr;
-				total += pleft->bn_leaf.bn_num;
+			}
+			if(NULL != pleft){
+				if(TYPE_INT == pleft->bn_type){
+					total += pleft->bn_inter.bn_num;
+				}
+				else{
+					total += pleft->bn_leaf.bn_num;
+				}
 				bc_num += 1;
 			}
 			if(path[i].idx >= path[i].pmid->bn_inter.bn_num-1){
 				if(NULL != path[i].pright){
 					pright = path[i].pright->bn_inter.bn_entry[0].bn_ptr.bn_ptr;
-					total += pright->bn_leaf.bn_num;
-					bc_num += 1;
 				}
 				else{
 					pright = NULL;
@@ -992,7 +941,14 @@ int bt_del(bptree_t * ptree, btk_t key){
 			}
 			else{
 				pright = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx+1].bn_ptr.bn_ptr;
-				total += pright->bn_leaf.bn_num;
+			}
+			if(NULL != pright){
+				if(TYPE_INT == pright->bn_type){
+					total += pright->bn_inter.bn_num;
+				}
+				else{
+					total += pright->bn_leaf.bn_num;
+				}
 				bc_num += 1;
 			}
 			pmid = (btnode_t *)path[i].pmid->bn_inter.bn_entry[path[i].idx].bn_ptr.bn_ptr;
@@ -1009,7 +965,9 @@ int bt_del(bptree_t * ptree, btk_t key){
 					bt_branch_merge(pleft, pmid, pright, &mer_info);
 					if(LEFT == mer_info.node){
 						if(path[i].idx == 0){
-							ret = bt_branch_del(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							if(NULL != path[i].pleft){
+								ret = bt_branch_del(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							}
 						}
 						else{
 							ret = bt_branch_del(path[i].pmid, path[i].idx-1);
@@ -1017,7 +975,9 @@ int bt_del(bptree_t * ptree, btk_t key){
 					}
 					else if(RIGHT == mer_info.node){
 						if(path[i].idx >= path[i].pmid->bn_inter.bn_num-1){
-							ret = bt_branch_del(path[i].pright, 0);
+							if(NULL != path[i].pright){
+								ret = bt_branch_del(path[i].pright, 0);
+							}
 						}
 						else{
 							ret = bt_branch_del(path[i].pmid, path[i].idx+1);
@@ -1027,12 +987,14 @@ int bt_del(bptree_t * ptree, btk_t key){
 					if(ret > DEL_FAIL)
 						ret = DEL_FAIL;
 				}
-				else{//if father's brother node be modify, how to handle?
+				else{
 					ret = DEL_OK;
 					bt_branch_rotate(pleft, pmid, pright, &rot_info, ROT_DEL);
 					if(0 != rot_info.leftkey.bn_key){
 						if(path[i].idx == 0){
-							ret += bt_branch_update(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							if(NULL != path[i].pleft){
+								ret += bt_branch_update(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							}
 						}
 						else{
 							ret += bt_branch_update(path[i].pmid, path[i].idx-1);
@@ -1043,7 +1005,9 @@ int bt_del(bptree_t * ptree, btk_t key){
 					}
 					if(0 != rot_info.rightkey.bn_key){
 						if(path[i].idx >= path[i].pmid->bn_inter.bn_num-1){
-							ret += bt_branch_update(path[i].pright, 0);
+							if(NULL != path[i].pright){
+								ret += bt_branch_update(path[i].pright, 0);
+							}
 						}
 						else{
 							ret += bt_branch_update(path[i].pmid, path[i].idx+1);
@@ -1061,7 +1025,9 @@ int bt_del(bptree_t * ptree, btk_t key){
 					bt_branch_update(path[i].pmid, path[i].idx);
 					if(LEFT == mer_info.node){
 						if(path[i].idx == 0){
-							ret += bt_branch_del(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							if(NULL != path[i].pleft){
+								ret += bt_branch_del(path[i].pleft, path[i].pleft->bn_inter.bn_num-1);
+							}
 						}
 						else{
 							ret += bt_branch_del(path[i].pmid, path[i].idx-1);
@@ -1069,7 +1035,9 @@ int bt_del(bptree_t * ptree, btk_t key){
 					}
 					else if(RIGHT == mer_info.node){
 						if(path[i].idx >= path[i].pmid->bn_inter.bn_num-1){
-							ret += bt_branch_del(path[i].pright, 0);
+							if(NULL != path[i].pright){
+								ret += bt_branch_del(path[i].pright, 0);
+							}
 						}
 						else{
 							ret = bt_branch_del(path[i].pmid, path[i].idx+1);
@@ -1078,37 +1046,12 @@ int bt_del(bptree_t * ptree, btk_t key){
 				}
 				else{
 					ret = DEL_OK;
-					btleaf_t * leaf_arr[3] = {0};
-					int node_num = 2;
-					if(pleft == NULL){
-						leaf_arr[0] = pleft;
-						leaf_arr[1] = pmid;
-					}
-					else if(pright == NULL){
-						leaf_arr[0] = pmid;
-						leaf_arr[1] = pright;
-					}
-					else{
-						leaf_arr[0] = pleft;
-						leaf_arr[1] = pmid;
-						leaf_arr[2] = pright;
-						node_num = 3;
-					}
-					bt_leaf_rotate(leaf_arr, path[i].idx, node_num, key, &rot_info, ROT_DEL);
-					if(2 == node_num){
-						if(NULL == pleft){
-							rot_info.updkey = rot_info.leftkey;
-							rot_info.leftkey.bn_key = 0;
-						}
-						else if(NULL == pright){
-							rot_info.updkey = rot_info.rightkey;
-							rot_info.rightkey.bn_key = 0;
-						}
-					}
-
+					bt_leaf_rotate(pleft, pmid, pright, path[i].idx, key, &rot_info, ROT_DEL);
 					if(0 != rot_info.leftkey.bn_key){
 						if(path[i].idx = 0){
-							ret += bt_branch_update(path[i].pleft, path[i].pleft->bn_leaf.bn_num-1);
+							if(NULL != path[i].pleft){
+								ret += bt_branch_update(path[i].pleft, path[i].pleft->bn_leaf.bn_num-1);
+							}
 						}
 						else{
 							ret += bt_branch_update(path[i].pmid, path[i].idx-1);
@@ -1119,10 +1062,12 @@ int bt_del(bptree_t * ptree, btk_t key){
 					}
 					if(0 != rot_info.rightkey.bn_key){
 						if(path[i].idx = 0){
-							ret += bt_branch_update(path[i].pright, 0);
+							if(NULL != path[i].pright){
+								ret += bt_branch_update(path[i].pright, 0);
+							}
 						}
 						else{
-						ret += bt_branch_update(path[i].pmid, path[i].idx+1);
+							ret += bt_branch_update(path[i].pmid, path[i].idx+1);
 						}
 					}
 					ret = ret==DEL_OK?DEL_OK:DEL_UPDATE;
@@ -1286,7 +1231,7 @@ void print_btree(bptree_t * ptree)
 	btpath_t path[BT_LVL_ROOT] = {0};
 	int cusor = 0;
 	//压栈
-	path[cusor].pNode = ptree->bpt_root;
+	path[cusor].pmid = ptree->bpt_root;
 	path[cusor].idx = 0;
 	cusor++;
 	btnode_t * tmpNode = NULL;
@@ -1296,7 +1241,7 @@ void print_btree(bptree_t * ptree)
 	printf("Root\n");
 	while(cusor){
 		//出栈
-		tmpNode = path[cusor-1].pNode;
+		tmpNode = path[cusor-1].pmid;
 		if(TYPE_LEAF != tmpNode->bn_type){
 			if(path[cusor-1].idx < tmpNode->bn_inter.bn_num){
 				if(path[cusor-1].idx == tmpNode->bn_inter.bn_num-1){
@@ -1308,7 +1253,7 @@ void print_btree(bptree_t * ptree)
 					sprintf(prefix,"%s│         ", prefix);
 				}
 				//入栈
-				path[cusor].pNode = (btnode_t *)tmpNode->bn_inter.bn_entry[path[cusor-1].idx].bn_ptr.bn_ptr;
+				path[cusor].pmid = (btnode_t *)tmpNode->bn_inter.bn_entry[path[cusor-1].idx].bn_ptr.bn_ptr;
 				path[cusor-1].idx ++;
 				path[cusor].idx = 0;
 				cusor ++;
@@ -1364,7 +1309,7 @@ void dump_tree(bptree_t * ptree, int fd){
 	aque_t queue;
 	unsigned long long offset = 0;
 	int num = 0;
-	sprintf(buf,"Data count:%d", get_tree_leaf_num(ptree->bpt_root));
+	sprintf(buf,"\nData count:%d", get_tree_leaf_num(ptree->bpt_root));
 	write(fd, buf, strlen(buf));
 	aque_init(&queue);
 	aq_push(&queue, ptree->bpt_root);
@@ -1442,7 +1387,7 @@ int main()
 				setbuf(stdin, NULL);
 				scanf("%ld", &key.bn_key);
 				setbuf(stdin, NULL);
-				//dump_tree(&tree, idump);
+				dump_tree(&tree, idump);
 				if(BTREE_OK == bt_insert(&tree,key))
 					log_debug("Insert :%ld success!\n", key.bn_key);
 				else
