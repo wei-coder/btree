@@ -20,6 +20,7 @@ remove = [".*delete:", pexpect.EOF, pexpect.TIMEOUT]
 
 prompt = [common,add, remove, pexpect.EOF, pexpect.TIMEOUT]
 
+
 def insert(child, value):
     index = child.expect(common)
     if(0 == index):
@@ -33,6 +34,7 @@ def insert(child, value):
         draw_tree(child)
         print("can not insert node!")
 
+
 def delete(child, value):
     index = child.expect(common)
     if(0 == index):
@@ -45,12 +47,14 @@ def delete(child, value):
     else:
         print("can not delete node!")
 
+
 def draw_tree(child):
     index = child.expect(common)
     if(0 == index):
         child.sendline(p_order)
     else:
         print("can not draw!")
+
 
 def tree_dump(child):
     index = child.expect(common)
@@ -59,12 +63,14 @@ def tree_dump(child):
     else:
         print("can not dump tree!")
 
+
 def show_info(child):
     index = child.expect(common)
     if 0 == index:
         child.sendline(s_order)
     else:
         print("can not show tree info!")
+
 
 def quit_proc(child):
     child.interact()
@@ -74,21 +80,33 @@ def start_proc(cmd):
     child = pexpect.spawn(cmd)
     return child
 
+
 def batch_insert(child,num):
     for i in range(0, num):
-        value = random.randint(3,1000)
+        value = random.randint(3, 1000)
 #        value = i
-        insert(child,value)
+        insert(child, value)
         time.sleep(0.001)
+
+
+def get_datas_num(child):
+    if not os.path.isfile("tree_data.txt"):
+        return 0
+    data_file = open("tree_data.txt", "+r")
+    line = data_file.readlines()
+    data_file.close()
+    return len(line)
+
 
 def batch_delete(child,num):
     data_file = open("tree_data.txt", "+r")
     line = data_file.readlines()
     for i in range(0, num):
-        idx = random.randint(0,100)
+        idx = random.randint(0,num)
 #        value = i
         delete(child,int(line[idx]))
         time.sleep(0.001)
+    data_file.close()
 
 
 def print_prompt():
@@ -101,6 +119,30 @@ def print_prompt():
 def print_eof():
     print("#input order [insert/del/?/quit]:")
 
+'''
+if __name__=='__main__':
+    os.system('rm -rf core.*')
+    os.system('rm -rf *.txt')
+    os.system('./gcc.sh')
+    fout = open("log.txt", "wb")
+    os.system("tailf log.txt &")
+    cmd = './btree'
+    child = start_proc(cmd)
+    child.logfile = fout
+    print_prompt()
+    for i in range(0, 100):
+        num = get_datas_num(child)
+        if num < 100:
+            num = random.randint(0,100)
+            batch_insert(child, int(num))
+        else:
+            num = random.randint(0,100)
+            batch_delete(child, int(num))
+        tree_dump(child)
+        draw_tree(child)
+        show_info(child)
+
+'''
 if __name__=='__main__':
     os.system('rm -rf core.*')
     os.system('rm -rf *.txt')
@@ -132,6 +174,7 @@ if __name__=='__main__':
                 delete(child, int(key))
             elif mode.find('m') != -1:
                 num = input("input key number:")
+                tree_dump(child)
                 batch_delete(child, int(num))
                 tree_dump(child)
                 draw_tree(child)
@@ -147,3 +190,4 @@ if __name__=='__main__':
     os.system("ps -ef | grep tailf | grep -v grep | cut -c 9-15 | xargs kill -9")
     quit_proc(child)
     fout.close()
+
