@@ -1462,36 +1462,75 @@ void dump_tree(bptree_t * ptree, int fd){
 	}
 }
 
+
+void load_branch(FILE * pfile, int lineno, btnode_t ** ppBranch){
+	char * keystr = NULL;
+	char * remainstr = NULL;
+	char line[200] = {0};
+	char typestr[5] = {0};
+	btype_t type;
+	int key = 0;
+	int ptr = 0;
+	int level = 0;
+	btnode_t * pNode = NULL;
+	long file_seek = 0;
+	while(NULL != fgets(line, 199, pfile)){
+		if(atoi(line[0]) == lineno){
+			lineno = -1;
+			break;
+		}
+	}
+	if(-1 != lineno){
+		return;
+	}
+	sscanf(line, "*### %s %d :*", typestr, level);
+	if(strcmp(typestr, "INT") == 0){
+		type = TYPE_INT;
+	}
+	else if(strcmp(typestr, "LEAF") == 0){
+		type = TYPE_LEAF;
+	}
+	else{
+		log_debug("[LOAD]type error\n");
+		return;
+	}
+	pNode = bt_new_node(type);
+	pNode->bn_level = level;
+	keystr = strchr(line, '-');
+	int i = 0;
+	while(keystr){
+		if(TYPE_INT == type){
+			sscanf(keystr, "*[%d : %d]*", ptr, key);
+			pNode->bn_inter.bn_entry[i].bn_key.bn_key = key;
+			file_seek = ftell(pfile);
+			load_branch(pfile, ptr, &(pNode->bn_inter.bn_entry[i].bn_ptr.bn_ptr));
+			fseek(pfile, file_seek, SEEK_SET);
+		}
+		else{
+			sscanf(keystr, "-*%d -*", key);
+			pNode->bn_leaf.bn_data[i].bn_key = key;
+		}
+		keystr = strchr(keystr, '-');
+		i++;
+	}
+}
+
 void load_tree(bptree_t * ptree, char * tree_name){
 	char line[200] = {0};
 	char type[5] = {0};
+	char * keystr = NULL;
+	char * remainstr = NULL;
+	int key = 0;
+	int ptr = 0;
 	int level = 0;
 	if(ptree->bpt_root != NULL){
 		return;
 	}
-	FILE * pfile = open(tree_name, "r");
+	FILE * pfile = fopen(tree_name, "r");
 	if(NULL == pfile){
 		return;
 	}
-	btnode_t * tmpNode = NULL;
-	while(NULL != fgets(line, 199, pfile)){
-		sscanf(line, "*### %s %d :*", type, level);
-		if(strcmp(type, "INT") == 0){
-			if(level == BT_LVL_ROOT){
-				tmpNode = bt_new_node(TYPE_INT);
-				tmpNode->bn_level = BT_LVL_ROOT;
-				ptree->bpt_root = tmpNode;
-			}
-			else{
-				tmpNode = bt_new_node(TYPE_INT);
-				tmpNode->bn_level = BT_LVL_INT;
-			}
-			
-		}
-		else{//leaf line
-			
-		}
-	}
+	load_branch(pfile, 0, &(ptree->bpt_root));
 }
 
 
