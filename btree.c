@@ -948,7 +948,7 @@ int bt_del(bptree_t * ptree, btk_t key){
 		path[i].pleft = tmpLeft;
 		path[i].pmid = tmpNode;
 		path[i].pright = tmpRight;
-		if(tmpNode->bn_type != TYPE_LEAF){
+		if(tmpNode->bn_type == TYPE_INT){
 			path[i].idx = bt_search_branch(tmpNode, key);
 			if(path[i].idx != BTREE_FAIL){
 				if(path[i].idx > 0){
@@ -971,8 +971,12 @@ int bt_del(bptree_t * ptree, btk_t key){
 				path[i].idx = tmpNode->bn_inter.bn_num-1;
 			}
 		}
-		else{
+		else if(tmpNode->bn_type == TYPE_LEAF){
 			path[i].idx = bt_exactsearch_leaf(tmpNode, key);
+		}
+		else{
+			log_debug("the tree is invalid, please check!\n");
+			exit(0);
 		}
 		if(path[i].idx == BTREE_FAIL){
 			log_debug("The key you want delete is not exist!\n");
@@ -1309,12 +1313,15 @@ void bt_init(bptree_t * ptree){
 	ptree->bpt_leaf_nums = LEAF_KEY_NUM;
 	ptree->bpt_branch_nums = INTER_KEY_NUM;
 	ptree->bpt_level = 1;
+	ptree->bpt_root = NULL;
+}
+
+void bt_create_root(bptree_t * ptree){
 	ptree->bpt_root = bt_new_node(TYPE_LEAF);
 	ptree->bpt_root->bn_level = BT_LVL_ROOT;
 	ptree->bpt_root->bn_type = TYPE_LEAF;
 	ptree->bpt_root->bn_leaf.bn_num = 0;
 }
-
 #if 1
 
 int get_tree_leaf_num(btnode_t * proot){
@@ -1356,8 +1363,8 @@ void print_leaf(btleaf_t * pleaf, char * prefix){
 
 void print_btree(bptree_t * ptree)
 {
-	if(NULL == ptree)
-	{
+	if((NULL == ptree) ||
+		(NULL != ptree && NULL == ptree->bpt_root)){
 		return;
 	}
 
@@ -1436,6 +1443,10 @@ void write_node(btnode_t * pNode, int fd, int num){
 }
 
 void dump_tree(bptree_t * ptree, int fd){
+	if((NULL == ptree) ||
+		(NULL != ptree && NULL == ptree->bpt_root)){
+		return;
+	}
 	btnode_t * pNode = NULL;
 	char buf[NODE_SIZE];
 	btnode_t * tmpNode = (btnode_t *)buf;
@@ -1474,8 +1485,10 @@ void load_branch(FILE * pfile, int lineno, btnode_t ** ppBranch){
 	int level = 0;
 	btnode_t * pNode = NULL;
 	long file_seek = 0;
+	int number = 0;
 	while(NULL != fgets(line, 199, pfile)){
-		if(atoi(line[0]) == lineno){
+		sscanf(line, "%d *", &number);
+		if(number == lineno){
 			lineno = -1;
 			break;
 		}
@@ -1483,7 +1496,7 @@ void load_branch(FILE * pfile, int lineno, btnode_t ** ppBranch){
 	if(-1 != lineno){
 		return;
 	}
-	sscanf(line, "*### %s %d :*", typestr, level);
+	sscanf(line, "%*s ### %s %d : %*s", typestr, &level);
 	if(strcmp(typestr, "INT") == 0){
 		type = TYPE_INT;
 	}
@@ -1494,22 +1507,26 @@ void load_branch(FILE * pfile, int lineno, btnode_t ** ppBranch){
 		log_debug("[LOAD]type error\n");
 		return;
 	}
-	pNode = bt_new_node(type);
+	*ppBranch = bt_new_node(type);
+	pNode = *ppBranch;
 	pNode->bn_level = level;
 	keystr = strchr(line, '-');
 	int i = 0;
 	while(keystr){
 		if(TYPE_INT == type){
-			sscanf(keystr, "*[%d : %d]*", ptr, key);
+			sscanf(keystr, "- [%d : %d] -%*s", &ptr, &key);
 			pNode->bn_inter.bn_entry[i].bn_key.bn_key = key;
 			file_seek = ftell(pfile);
 			load_branch(pfile, ptr, &(pNode->bn_inter.bn_entry[i].bn_ptr.bn_ptr));
+			pNode->bn_inter.bn_num++;
 			fseek(pfile, file_seek, SEEK_SET);
 		}
 		else{
-			sscanf(keystr, "-*%d -*", key);
+			sscanf(keystr, "- %d -%*s", &key);
 			pNode->bn_leaf.bn_data[i].bn_key = key;
+			pNode->bn_leaf.bn_num++;
 		}
+		keystr += 1;
 		keystr = strchr(keystr, '-');
 		i++;
 	}
@@ -1589,6 +1606,9 @@ int main()
 			case 'i':
 				//insert
 				log_debug("\n please input node id which you want insert:");
+				if(NULL == tree.bpt_root){
+					bt_create_root(&tree);
+				}
 				setbuf(stdin, NULL);
 				scanf("%ld", &key.bn_key);
 				setbuf(stdin, NULL);
@@ -1610,6 +1630,9 @@ int main()
 			case 'd':
 				//delete
 				log_debug("\n please input node id which you want delete:");
+				if(NULL == tree.bpt_root){
+					bt_create_root(&tree);
+				}
 				setbuf(stdin, NULL);
 				scanf("%ld", &key.bn_key);
 				setbuf(stdin, NULL);
@@ -1642,6 +1665,9 @@ int main()
 			case 'p':
 				//print
 				log_debug("***print tree list as follow*****\n");
+				if(NULL == tree.bpt_root){
+					bt_create_root(&tree);
+				}
 				print_btree(&tree);
 				print_eof();
 				break;
@@ -1649,6 +1675,9 @@ int main()
 			case 's':
 				//show
 				log_debug("***show B+ tree base info as follow*****\n");
+				if(NULL == tree.bpt_root){
+					bt_create_root(&tree);
+				}
 				print_btree_info(&tree);
 				if(1 == invalid)
 					log_debug("Tree invalid!\n");
@@ -1658,6 +1687,9 @@ int main()
 			case 'f':
 				//flush
 				log_debug("***flush B+ tree to file*****\n");
+				if(NULL == tree.bpt_root){
+					bt_create_root(&tree);
+				}
 				int treeinfo = open("tree_data.txt", O_RDONLY);
 				if(treeinfo > 0){
 					close(treeinfo);
@@ -1666,6 +1698,19 @@ int main()
 				treeinfo = open("tree_data.txt", O_WRONLY|O_CREAT, S_IRWXU);
 				save_tree_data(&tree, treeinfo);
 				close(treeinfo);
+				print_eof();
+				break;
+				
+			case 'l':
+				//flush
+				log_debug("***dump B+ tree from file*****\n");
+				log_debug("please input tree file name:\n");
+				char filename[20] = {0};
+				setbuf(stdin, NULL);
+				scanf("%s", filename);
+				setbuf(stdin, NULL);
+				load_tree(&tree, filename);
+				print_btree(&tree);
 				print_eof();
 				break;
 
