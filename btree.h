@@ -85,21 +85,10 @@ typedef struct bplus_tree_s
 
 typedef enum
 {
-	IST_OK = 0,
-	IST_SPLIT,
-	IST_ROTATE,
-	IST_UPDATE,
-	IST_FAIL
-}istv_t;		//insert return value
-
-typedef enum
-{
-	DEL_OK = 0,
-	DEL_ROTATE,
-	DEL_MERGE,
-	DEL_UPDATE,
-	DEL_FAIL
-}delv_t;		//delete return value
+	MOD_OK = 0,
+	MOD_NOK,
+	MOD_FAIL
+}modv_t;		//delete return value
 
 typedef enum
 {
@@ -117,16 +106,12 @@ typedef enum
 
 typedef struct
 {
-	btk_t updkey;
-	btk_t rightkey;
-	btk_t leftkey;
-}rotate_t;
-
-typedef struct
-{
-	btk_t updkey;		//the Node new key
-	ndflag_t node;		//node be merged
-}merge_t;
+	int leftkey;
+	int midkey;
+	int rightkey;
+	ndflag_t invalidnode;
+	bti_t newnode;
+}modinfo_t;
 
 typedef struct
 {
@@ -136,10 +121,14 @@ typedef struct
 
 typedef struct
 {
-	btnode_t * pleft;
-	btnode_t * pmid;
-	btnode_t * pright;
-	int idx;
+	btnode_t * pleft;			//左节点
+	btnode_t * plfather;		//左子节点的父节点
+	int leftidx;				//左子节点的索引
+	btnode_t * pmid;			//子节点
+	int mididx;					//子节点索引
+	btnode_t * pright;			//右节点
+	btnode_t * prfather;		//右子节点的父节点
+	int rightidx;				//右子节点的索引
 }btpath_t;
 
 #endif
